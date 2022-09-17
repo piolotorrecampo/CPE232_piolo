@@ -1,0 +1,46 @@
+This text file is a guide in setting up ansible and its basic configurations, including inventory, ansible config file, ansible playbooks and commands.
+
+Before proceeding in executing ansible commands, please make sure that there are ssh connection between the host and the servers.
+
+1. Assign a ssh key for the host computer.
+	ssh-keygen -t rsa -b 4094
+2. Copy the ssh public key to the servers using the host machine.
+	ssh-copy-id -i $HOME/.ssh/id_rsa username@ipaddress
+Note: For conviniece, we can assign the ip address to the "/etc/host"s file. Make sure that we we are connecting to a server via ssh, the servers must not ask for a password.
+3.  Install ansible.
+	Arch: yay -S ansible
+	Ubuntu: sudo apt install ansible --fix-missing
+4. Create a directory where the ansible configuration will go through.
+   Sample Tree:
+	ansible
+  	   - ansible.cfg 
+		[defaults]
+		inventory = inventory
+		host_key_checking = False
+		deprecation_warnings = False
+		private_key_file = $HOME/.ssh/id_rsa
+	   - inventory 
+		[ubuntu]
+userver1   ansible_connection=ssh  ansible_user=userver  apache_package=apache2  php_package=libapache2-mod-php
+userver2   ansible_connection=ssh  ansible_user=userver  apache_package=apache2  php_package=libapache2-mod-php
+[centos]
+centos     ansible_connection=ssh  ansible_user=centos   apache_package=httpd    php_package=php
+	   - playbook.yml
+		---
+		- hosts: all
+  		  become: true
+  		  tasks:
+  		  - name: install apache2 and php package
+    		    package:
+      		      name: # This are variable that can be set in inventory file
+                        - "{{ apache_package }}"
+                        - "{{ php_package  }}"
+                      state: latest
+                      update_cache: yes
+		
+5. Test the connectivity of the servers. The connections should be all success depending on the servers state.
+	ansible all -m ping
+6. Running a playbook.
+	Running in --ask-become-pass
+		ansible-playbook --ask-become-pass playbook.yml
+
