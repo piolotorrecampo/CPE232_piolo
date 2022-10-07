@@ -1,5 +1,9 @@
-[ubuntu]
-userver1   ansible_connection=ssh  ansible_user=userver  apache_package=apache2  php_package=libapache2-mod-php
-userver2   ansible_connection=ssh  ansible_user=userver  apache_package=apache2  php_package=libapache2-mod-php
-[centos]  
-centos     ansible_connection=ssh  ansible_user=centos  apache_package=httpd    php_package=php
+[web_servers]
+192.168.122.88 ansible_user=userver1
+192.168.122.13 ansible_user=cserver1
+
+[db_servers]
+192.168.122.164 ansible_user=userver2
+
+[file_servers]
+192.168.122.131  ansible_user=userver3
